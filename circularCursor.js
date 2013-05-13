@@ -31,15 +31,17 @@ $.extend(circularCursor.prototype, {
         this.turnValue = turnValue;
         this.incrementValue = incrementValue;
         this.val = 0;
-        this.setCursorAngle(start);
+        this.setValue(start);
         this.canvasPosition = $(canvas.canvas).offset();
         this.min = min;
         this.max = max;
         var item = this;
+        var startX;
+        var startY;
         this.cursor.drag(
             // onmove
             function (dx, dy, x, y, event) {
-                var newAngle = item.getAngle(x - item.canvasPosition.left, y - item.canvasPosition.top);
+                var newAngle = item.getAngle(startX + dx, startY + dy);
                 item.setCursorAngle(newAngle);
                 if(item.moveCallback && typeof(item.moveCallback) === 'function') {
                     item.moveCallback();
@@ -47,6 +49,8 @@ $.extend(circularCursor.prototype, {
             },
             // onstart
             function (x, y, event) {
+                startX = this.attr('cx');
+                startY = this.attr('cy');
                 if(item.startCallback && typeof(item.startCallback) === 'function') {
                     item.startCallback();
                 };
@@ -91,6 +95,7 @@ $.extend(circularCursor.prototype, {
 
         var cursorX = this.cursorRadius * Math.sin(this.angle) + this.canvas.width / 2;
         var cursorY = this.canvas.height / 2 - this.cursorRadius * Math.cos(this.angle);
+        console.log('start : (' + cursorX + ', ' + cursorY + ')');
         this.cursor.attr({
             cx: cursorX,
             cy: cursorY,
