@@ -95,7 +95,6 @@ $.extend(circularCursor.prototype, {
 
         var cursorX = this.cursorRadius * Math.sin(this.angle) + this.canvas.width / 2;
         var cursorY = this.canvas.height / 2 - this.cursorRadius * Math.cos(this.angle);
-        console.log('start : (' + cursorX + ', ' + cursorY + ')');
         this.cursor.attr({
             cx: cursorX,
             cy: cursorY,
