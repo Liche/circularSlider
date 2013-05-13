@@ -1,40 +1,42 @@
 circularCursor = {};
 
-circularCursor = function () {
+circularCursor = function (cursor, cursorRadius, turnValue, incrementValue) {
     // Structure
-    this.canvas;
-    this.cursor;
-    this.cursorRadius;
-    this.turn;
-    this.turnValue;
-    this.incrementValue;
-    this.canvasPosition;
+    this.cursor = cursor;
+    this.cursorRadius = cursorRadius;
+    this.turn = 0;
+    this.turnValue = turnValue;
+    this.incrementValue = incrementValue;
     // Values
-    this.min;
-    this.max;
-    this.angle;
-    this.val;
+    this.center = {x: this.cursor.paper.width / 2, y: this.cursor.paper.height / 2};
+    this.min = null;
+    this.max = null;
+    this.angle = 0;
+    this.val = 0;
     // Callbacks
-    this.startCallback;
-    this.moveCallback;
-    this.endCallback;
+    this.startCallback = null;
+    this.moveCallback = null;
+    this.endCallback = null;
 
     return this;
 }
 
 $.extend(circularCursor.prototype, {
-    initialize: function (canvas, cursor, cursorRadius, turnValue, incrementValue, start = 0, min = null, max = null) {
-        this.canvas = canvas;
-        this.cursor = cursor;
-        this.cursorRadius = cursorRadius;
-        this.turn = 0;
-        this.turnValue = turnValue;
-        this.incrementValue = incrementValue;
-        this.val = 0;
-        this.setValue(start);
-        this.canvasPosition = $(canvas.canvas).offset();
-        this.min = min;
-        this.max = max;
+    initialize: function (args = {}) {//, start = 0, min = null, max = null) {
+        if (args.min) {
+            this.min = args.min;
+        }
+        if (args.max) {
+            this.max = args.max;
+        }
+        if (args.center) {
+            this.center = args.center;
+        }
+        if (args.start) {
+            this.val = args.start
+        }
+        this.setValue(this.val);
+
         var item = this;
         var startX;
         var startY;
@@ -65,15 +67,15 @@ $.extend(circularCursor.prototype, {
     },
 
     getAngle: function (x, y) {
-        var calcX = x - this.canvas.width / 2;
-        var calcY = y - this.canvas.height / 2;
+        var calcX = x - this.center.x;
+        var calcY = y - this.center.y;
 
         return Math.atan2(calcX, -calcY);
     },
 
     setCursorAngle: function (angle) {
-        var cursorX = this.cursorRadius * Math.sin(angle) + this.canvas.width / 2;
-        var cursorY = this.canvas.height / 2 - this.cursorRadius * Math.cos(angle);
+        var cursorX = this.cursorRadius * Math.sin(angle) + this.center.x;
+        var cursorY = this.center.y - this.cursorRadius * Math.cos(angle);
         this.cursor.attr({
             cx: cursorX,
             cy: cursorY,
@@ -93,8 +95,8 @@ $.extend(circularCursor.prototype, {
             2 * Math.PI * (fraction - 1) :
             2 * Math.PI * fraction;
 
-        var cursorX = this.cursorRadius * Math.sin(this.angle) + this.canvas.width / 2;
-        var cursorY = this.canvas.height / 2 - this.cursorRadius * Math.cos(this.angle);
+        var cursorX = this.cursorRadius * Math.sin(this.angle) + this.center.x;
+        var cursorY = this.center.y - this.cursorRadius * Math.cos(this.angle);
         this.cursor.attr({
             cx: cursorX,
             cy: cursorY,

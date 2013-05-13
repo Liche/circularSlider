@@ -14,32 +14,34 @@
                 // Création du canvas
                 var paper = Raphael("canvas", 640, 480);
                 paper.rect(0, 0, 640, 480, 10).attr({fill: "#ddd", stroke: "none"});
-                paper.circle(320, 240, 150).attr({stroke: '#aaa', 'stroke-width': 5});
+                paper.circle(200, 200, 150).attr({stroke: '#aaa', 'stroke-width': 5});
 
                 // Création du curseur
                 var cursor = paper.circle(320, 240, 10).attr({stroke: '#000', 'stroke-width': 5, fill: '#ddd'});
 
+
+                // Initialisation du moteur de curseur
+                myCursor = new circularCursor(cursor, 150, 1000, 10);
+                myCursor.initialize({
+                    center: {x: 200, y: 200},
+                    min: -100,
+                    max: 1200,
+                    start: 10,
+                });
+
                 // Valeur du curseur
-                var text = paper.text(20, 400, '0', paper.getFont("Times"), 14).attr({fill: "#000"});
+                var text = paper.text(20, 400, myCursor.getValue(), paper.getFont("Times"), 14).attr({fill: "#000"});
+                // Bouton reset
                 paper.rect(500, 10, 65, 20).attr({fill: "#aaa"});
                 var reset = paper.text(530, 20, 'reset', paper.getFont("Times"), 14).attr({fill: "#000"})
-                // Initialisation du moteur de curseur
-                myCursor = new circularCursor();
 
                 // Callback pour la valeur du curseur
                 myCursor.setMoveCallback(function () {
                     text.attr({text: myCursor.getValue()});
                 });
-                // Initialisation :
-                // Canvas
-                // Curseur
-                // Rayon du curseur
-                // Valeur d'un tour complet du curseur
-                // Incrément
-                myCursor.initialize(paper, cursor, 150, 1000, 10, 0, -1500, 1500);
                 reset.click(function () {
-                    myCursor.setValue(0);
-                    text.attr({text: '0'});
+                    myCursor.setValue(100);
+                    text.attr({text: '100'});
                 });
             });
         </script>
