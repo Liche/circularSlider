@@ -2,9 +2,9 @@
 <html>
     <head>
         <title>Test de slider circulaire</title>
-        <script type="text/javascript" src="jquery-1.4.4"></script>
-        <script type="text/javascript" src="raphael"></script>
-        <script type="text/javascript" src="circularCursor"></script>
+        <script type="text/javascript" src="jquery-1.4.4.js"></script>
+        <script type="text/javascript" src="raphael.js"></script>
+        <script type="text/javascript" src="circularCursor.js"></script>
     </head>
     <body style="background-color: black;">
         <div id="canvas" style="width: 640px; margin: 0 auto;">
@@ -21,7 +21,8 @@
 
                 // Valeur du curseur
                 var text = paper.text(20, 400, '0', paper.getFont("Times"), 14).attr({fill: "#000"});
-
+                paper.rect(500, 10, 65, 20).attr({fill: "#aaa"});
+                var reset = paper.text(530, 20, 'reset', paper.getFont("Times"), 14).attr({fill: "#000"})
                 // Initialisation du moteur de curseur
                 myCursor = new circularCursor();
 
@@ -35,7 +36,11 @@
                 // Rayon du curseur
                 // Valeur d'un tour complet du curseur
                 // Incrément
-                myCursor.initialize(paper, cursor, 150, 1000, 10);
+                myCursor.initialize(paper, cursor, 150, 1000, 10, 0, -1500, 1500);
+                reset.click(function () {
+                    myCursor.setValue(0);
+                    text.attr({text: '0'});
+                });
             });
         </script>
     </body>

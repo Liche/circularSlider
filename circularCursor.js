@@ -10,6 +10,8 @@ circularCursor = function () {
     this.incrementValue;
     this.canvasPosition;
     // Values
+    this.min;
+    this.max;
     this.angle;
     this.val;
     // Callbacks
@@ -21,7 +23,7 @@ circularCursor = function () {
 }
 
 $.extend(circularCursor.prototype, {
-    initialize: function (canvas, cursor, cursorRadius, turnValue, incrementValue) {
+    initialize: function (canvas, cursor, cursorRadius, turnValue, incrementValue, start = 0, min = null, max = null) {
         this.canvas = canvas;
         this.cursor = cursor;
         this.cursorRadius = cursorRadius;
@@ -29,20 +31,19 @@ $.extend(circularCursor.prototype, {
         this.turnValue = turnValue;
         this.incrementValue = incrementValue;
         this.val = 0;
-        this.setCursorAngle(0);
+        this.setCursorAngle(start);
         this.canvasPosition = $(canvas.canvas).offset();
-
+        this.min = min;
+        this.max = max;
         var item = this;
         this.cursor.drag(
             // onmove
             function (dx, dy, x, y, event) {
                 var newAngle = item.getAngle(x - item.canvasPosition.left, y - item.canvasPosition.top);
-                var oldAngle = item.angle;
                 item.setCursorAngle(newAngle);
                 if(item.moveCallback && typeof(item.moveCallback) === 'function') {
                     item.moveCallback();
                 };
-                item.angle = newAngle;
             },
             // onstart
             function (x, y, event) {
@@ -74,21 +75,44 @@ $.extend(circularCursor.prototype, {
             cy: cursorY,
         });
         this.setValueByAngles(angle, this.angle);
-        this.angle = angle;
+    },
+    setValue: function(value) {
+        this.turn = Math.ceil((value - this.turnValue / 2) / this.turnValue);
+        this.val = value;
+        var fraction =
+            this.val % this.turnValue < 0 ?
+            this.val % this.turnValue + this.turnValue :
+            this.val % this.turnValue;
+        fraction = fraction / this.turnValue;
+        this.angle =
+            fraction > 0.5 ?
+            2 * Math.PI * (fraction - 1) :
+            2 * Math.PI * fraction;
+
+        var cursorX = this.cursorRadius * Math.sin(this.angle) + this.canvas.width / 2;
+        var cursorY = this.canvas.height / 2 - this.cursorRadius * Math.cos(this.angle);
+        this.cursor.attr({
+            cx: cursorX,
+            cy: cursorY,
+        });
+        return this.angle;
     },
 
     setValueByAngles: function(newAngle, oldAngle) {
         if(newAngle >= Math.PI / 2 && oldAngle < -Math.PI / 2) {
             this.turn--;
-            if(this.turn < 0) this.turn = 0;
         }
         if(newAngle < -Math.PI / 2 && oldAngle >= Math.PI / 2) {
             this.turn++;
         }
+        this.angle = newAngle;
         this.val = this.turnValue * (this.turn + newAngle / (2 * Math.PI));
-        if(this.val < 0) {
-            this.val = 0;
-            this.setCursorAngle(0);
+        //gestion du minmax
+        if(this.min != null && this.val < this.min) {
+            this.setValue(this.min);
+        }
+        if(this.max != null && this.val > this.max) {
+            this.setValue(this.max);
         }
         //gestion de l'incrément
         this.val = Math.floor(this.val / this.incrementValue) * this.incrementValue;
