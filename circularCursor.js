@@ -22,7 +22,7 @@ circularCursor = function (cursor, cursorRadius, turnValue, incrementValue) {
 }
 
 $.extend(circularCursor.prototype, {
-    initialize: function (args = {}) {//, start = 0, min = null, max = null) {
+    initialize: function (args = {}) {
         if (args.min) {
             this.min = args.min;
         }
@@ -127,6 +127,10 @@ $.extend(circularCursor.prototype, {
     getValue: function() {
 
         return this.val;
+    },
+
+    getAngle: function() {
+        return this.angle;
     },
 
     setStartCallback: function(callback) {
