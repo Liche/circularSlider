@@ -43,7 +43,7 @@ $.extend(circularCursor.prototype, {
         this.cursor.drag(
             // onmove
             function (dx, dy, x, y, event) {
-                var newAngle = item.getAngle(startX + dx, startY + dy);
+                var newAngle = item.computeAngle(startX + dx, startY + dy);
                 item.setCursorAngle(newAngle);
                 if(item.moveCallback && typeof(item.moveCallback) === 'function') {
                     item.moveCallback();
@@ -66,7 +66,7 @@ $.extend(circularCursor.prototype, {
         );
     },
 
-    getAngle: function (x, y) {
+    computeAngle: function (x, y) {
         var calcX = x - this.center.x;
         var calcY = y - this.center.y;
 
@@ -101,6 +101,7 @@ $.extend(circularCursor.prototype, {
             cx: cursorX,
             cy: cursorY,
         });
+
         return this.angle;
     },
 
@@ -130,6 +131,7 @@ $.extend(circularCursor.prototype, {
     },
 
     getAngle: function() {
+
         return this.angle;
     },
 
