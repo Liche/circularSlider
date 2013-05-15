@@ -1,12 +1,8 @@
 circularCursor = {};
 
-circularCursor = function (cursor, cursorRadius, turnValue, incrementValue) {
+circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) {
     // Structure
-    var _cursor = cursor;
-    var _cursorRadius = cursorRadius;
     var _turn = 0;
-    var _turnValue = turnValue;
-    var _incrementValue = incrementValue;
     // Values
     var _center = {x: _cursor.paper.width / 2, y: _cursor.paper.height / 2};
     var _min = null;
