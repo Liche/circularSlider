@@ -112,7 +112,6 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
                 if(_endCallback && typeof(_endCallback) === 'function') {
                     _endCallback();
                 };
-                console.log(item.val);
             }
         );
     }
