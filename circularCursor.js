@@ -2,148 +2,149 @@ circularCursor = {};
 
 circularCursor = function (cursor, cursorRadius, turnValue, incrementValue) {
     // Structure
-    this.cursor = cursor;
-    this.cursorRadius = cursorRadius;
-    this.turn = 0;
-    this.turnValue = turnValue;
-    this.incrementValue = incrementValue;
+    var _cursor = cursor;
+    var _cursorRadius = cursorRadius;
+    var _turn = 0;
+    var _turnValue = turnValue;
+    var _incrementValue = incrementValue;
     // Values
-    this.center = {x: this.cursor.paper.width / 2, y: this.cursor.paper.height / 2};
-    this.min = null;
-    this.max = null;
-    this.angle = 0;
-    this.val = 0;
+    var _center = {x: _cursor.paper.width / 2, y: _cursor.paper.height / 2};
+    var _min = null;
+    var _max = null;
+    var _angle = 0;
+    var _val = 0;
     // Callbacks
-    this.startCallback = null;
-    this.moveCallback = null;
-    this.endCallback = null;
+    var _startCallback = null;
+    var _moveCallback = null;
+    var _endCallback = null;
 
-    return this;
-}
+    var computeAngle = function (x, y) {
+        var calcX = x - _center.x;
+        var calcY = y - _center.y;
 
-$.extend(circularCursor.prototype, {
-    initialize: function (args = {}) {
+        return Math.atan2(calcX, -calcY);
+    }
+
+    var setValue = function(value) {
+        _turn = Math.ceil((value - _turnValue / 2) / _turnValue);
+        _val = value;
+        var fraction =
+            _val % _turnValue < 0 ?
+            _val % _turnValue + _turnValue :
+            _val % _turnValue;
+        fraction = fraction / _turnValue;
+        _angle =
+            fraction > 0.5 ?
+            2 * Math.PI * (fraction - 1) :
+            2 * Math.PI * fraction;
+
+        var cursorX = _cursorRadius * Math.sin(_angle) + _center.x;
+        var cursorY = _center.y - _cursorRadius * Math.cos(_angle);
+        _cursor.attr({
+            cx: cursorX,
+            cy: cursorY,
+        });
+    }
+
+    var setValueByAngles = function(newAngle, oldAngle) {
+        if(newAngle >= Math.PI / 2 && oldAngle < -Math.PI / 2) {
+            _turn--;
+        }
+        if(newAngle < -Math.PI / 2 && oldAngle >= Math.PI / 2) {
+            _turn++;
+        }
+        _angle = newAngle;
+        _val = _turnValue * (_turn + newAngle / (2 * Math.PI));
+        //gestion du minmax
+        if(_min != null && _val < _min) {
+            setValue(_min);
+        }
+        if(_max != null && _val > _max) {
+            setValue(_max);
+        }
+        //gestion de l'incrément
+        _val = Math.floor(_val / _incrementValue) * _incrementValue;
+    }
+
+    var setCursorAngle = function (angle) {
+        var cursorX = _cursorRadius * Math.sin(angle) + _center.x;
+        var cursorY = _center.y - _cursorRadius * Math.cos(angle);
+        _cursor.attr({
+            cx: cursorX,
+            cy: cursorY,
+        });
+        setValueByAngles(angle, _angle);
+    }
+
+    this.initialize = function (args = {}) {
         if (args.min) {
-            this.min = args.min;
+            _min = args.min;
         }
         if (args.max) {
-            this.max = args.max;
+            _max = args.max;
         }
         if (args.center) {
-            this.center = args.center;
+            _center = args.center;
         }
         if (args.start) {
-            this.val = args.start
+            _val = args.start
         }
-        this.setValue(this.val);
+        this.setValue(_val);
 
         var item = this;
         var startX;
         var startY;
-        this.cursor.drag(
+        _cursor.drag(
             // onmove
             function (dx, dy, x, y, event) {
-                var newAngle = item.computeAngle(startX + dx, startY + dy);
-                item.setCursorAngle(newAngle);
-                if(item.moveCallback && typeof(item.moveCallback) === 'function') {
-                    item.moveCallback();
+                var newAngle = computeAngle(startX + dx, startY + dy);
+                setCursorAngle(newAngle);
+                if(_moveCallback && typeof(_moveCallback) === 'function') {
+                    _moveCallback();
                 };
             },
             // onstart
             function (x, y, event) {
                 startX = this.attr('cx');
                 startY = this.attr('cy');
-                if(item.startCallback && typeof(item.startCallback) === 'function') {
-                    item.startCallback();
+                if(_startCallback && typeof(_startCallback) === 'function') {
+                    _startCallback();
                 };
             },
             // onend
             function (event) {
-                if(item.endCallback && typeof(item.endCallback) === 'function') {
-                    item.endCallback();
+                if(_endCallback && typeof(_endCallback) === 'function') {
+                    _endCallback();
                 };
+                console.log(item.val);
             }
         );
-    },
+    }
 
-    computeAngle: function (x, y) {
-        var calcX = x - this.center.x;
-        var calcY = y - this.center.y;
+    this.setValue = function(value) {
+        setValue(value);
+    }
 
-        return Math.atan2(calcX, -calcY);
-    },
+    this.getValue = function() {
 
-    setCursorAngle: function (angle) {
-        var cursorX = this.cursorRadius * Math.sin(angle) + this.center.x;
-        var cursorY = this.center.y - this.cursorRadius * Math.cos(angle);
-        this.cursor.attr({
-            cx: cursorX,
-            cy: cursorY,
-        });
-        this.setValueByAngles(angle, this.angle);
-    },
-    setValue: function(value) {
-        this.turn = Math.ceil((value - this.turnValue / 2) / this.turnValue);
-        this.val = value;
-        var fraction =
-            this.val % this.turnValue < 0 ?
-            this.val % this.turnValue + this.turnValue :
-            this.val % this.turnValue;
-        fraction = fraction / this.turnValue;
-        this.angle =
-            fraction > 0.5 ?
-            2 * Math.PI * (fraction - 1) :
-            2 * Math.PI * fraction;
+        return _val;
+    }
 
-        var cursorX = this.cursorRadius * Math.sin(this.angle) + this.center.x;
-        var cursorY = this.center.y - this.cursorRadius * Math.cos(this.angle);
-        this.cursor.attr({
-            cx: cursorX,
-            cy: cursorY,
-        });
+    this.getAngle = function() {
 
-        return this.angle;
-    },
+        return _angle;
+    }
+    this.setStartCallback = function(callback) {
+        _startCallback = callback;
+    }
 
-    setValueByAngles: function(newAngle, oldAngle) {
-        if(newAngle >= Math.PI / 2 && oldAngle < -Math.PI / 2) {
-            this.turn--;
-        }
-        if(newAngle < -Math.PI / 2 && oldAngle >= Math.PI / 2) {
-            this.turn++;
-        }
-        this.angle = newAngle;
-        this.val = this.turnValue * (this.turn + newAngle / (2 * Math.PI));
-        //gestion du minmax
-        if(this.min != null && this.val < this.min) {
-            this.setValue(this.min);
-        }
-        if(this.max != null && this.val > this.max) {
-            this.setValue(this.max);
-        }
-        //gestion de l'incrément
-        this.val = Math.floor(this.val / this.incrementValue) * this.incrementValue;
-    },
+    this.setMoveCallback = function(callback) {
+        _moveCallback = callback;
+    }
 
-    getValue: function() {
+    this.setEndCallback = function(callback) {
+        _endCallback = callback;
+    }
 
-        return this.val;
-    },
-
-    getAngle: function() {
-
-        return this.angle;
-    },
-
-    setStartCallback: function(callback) {
-        this.startCallback = callback;
-    },
-
-    setMoveCallback: function(callback) {
-        this.moveCallback = callback;
-    },
-
-    setEndCallback: function(callback) {
-        this.endCallback = callback;
-    },
-});
+    return this;
+}
