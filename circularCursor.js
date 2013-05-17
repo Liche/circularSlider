@@ -72,7 +72,8 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
         setValueByAngles(angle, _angle);
     }
 
-    this.initialize = function (args = {}) {
+    this.initialize = function (args) {
+        if(typeof(args) !== 'object') args = {};
         if (args.min) {
             _min = args.min;
         }
