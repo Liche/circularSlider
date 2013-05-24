@@ -130,6 +130,14 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
 
         return _angle;
     }
+
+    this.getCoordinates = function(angle, radius) {
+        return {
+            x: _center.x + radius * sin(angle),
+            y: _center.y - radius * cos(angle),
+        }
+    }
+
     this.setStartCallback = function(callback) {
         _startCallback = callback;
     }
