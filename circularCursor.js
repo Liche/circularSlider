@@ -74,16 +74,16 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
 
     this.initialize = function (args) {
         if(typeof(args) !== 'object') args = {};
-        if (args.min) {
+        if (args.min !== undefined) {
             _min = args.min;
         }
-        if (args.max) {
+        if (args.max !== undefined) {
             _max = args.max;
         }
-        if (args.center) {
+        if (args.center !== undefined) {
             _center = args.center;
         }
-        if (args.start) {
+        if (args.start !== undefined) {
             _val = args.start
         }
         this.setValue(_val);
