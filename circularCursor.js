@@ -33,7 +33,10 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
             fraction > 0.5 ?
             2 * Math.PI * (fraction - 1) :
             2 * Math.PI * fraction;
+        refreshCursor();
+    }
 
+    var refreshCursor = function() {
         var cursorX = _cursorRadius * Math.sin(_angle) + _center.x;
         var cursorY = _center.y - _cursorRadius * Math.cos(_angle);
         _cursor.attr({
@@ -115,6 +118,11 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
                 };
             }
         );
+    }
+
+    this.setCenter = function(x, y) {
+        _center.x = x;
+        _center.y = y;
     }
 
     this.setValue = function(value) {
