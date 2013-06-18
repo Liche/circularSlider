@@ -5,6 +5,8 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
     var _turn = 0;
     // Values
     var _center = {x: _cursor.paper.width / 2, y: _cursor.paper.height / 2};
+    var _paperRatio = {x: _cursor.paper.width / $(window).width(), y: _cursor.paper.height / $(window).height()};
+    var _resizable = true;
     var _min = null;
     var _max = null;
     var _angle = 0;
@@ -89,6 +91,10 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
         if (args.start !== undefined) {
             _val = args.start
         }
+        if (args.resizable !== undefined) {
+            _resizable = args.resizable;
+        }
+
         this.setValue(_val);
 
         var item = this;
@@ -118,11 +124,11 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
                 };
             }
         );
-    }
-
-    this.setCenter = function(x, y) {
-        _center.x = x;
-        _center.y = y;
+        if (_resizable) {
+            $(window).resize(function() {
+                _cursor.paper.changeSize($(this).width() * _paperRatio.x, $(this).height() * _paperRatio.y);
+            });
+        }
     }
 
     this.setValue = function(value) {
