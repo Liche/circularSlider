@@ -19,7 +19,6 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
     var computeAngle = function (x, y) {
         var calcX = x - _center.x;
         var calcY = y - _center.y;
-
         return Math.atan2(calcX, -calcY);
     }
 
@@ -94,7 +93,9 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
         if (args.resizable !== undefined) {
             _resizable = args.resizable;
         }
-
+        if (_resizable) {
+            _centerRatio = {x: _center.x/_cursor.paper.width, y: _center.y/_cursor.paper.height};
+        }
         this.setValue(_val);
 
         var item = this;
@@ -103,9 +104,14 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
         _cursor.drag(
             // onmove
             function (dx, dy, x, y, event) {
-                var newAngle = computeAngle(startX + dx, startY + dy);
+                var newAngle;
+                if (_resizable) {
+                    newAngle = computeAngle(startX + dx * _cursor.paper.w / _cursor.paper.width, startY + dy * _cursor.paper.h / _cursor.paper.height);
+                } else {
+                    newAngle = computeAngle(startX + dx, startY + dy);
+                }
                 setCursorAngle(newAngle);
-                if(_moveCallback && typeof(_moveCallback) === 'function') {
+                if (_moveCallback && typeof(_moveCallback) === 'function') {
                     _moveCallback();
                 };
             },
