@@ -5,8 +5,6 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
     var _turn = 0;
     // Values
     var _center = {x: _cursor.paper.width / 2, y: _cursor.paper.height / 2};
-    var _paperRatio = {x: _cursor.paper.width / $(window).width(), y: _cursor.paper.height / $(window).height()};
-    var _resizable = true;
     var _min = null;
     var _max = null;
     var _angle = 0;
@@ -19,6 +17,7 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
     var computeAngle = function (x, y) {
         var calcX = x - _center.x;
         var calcY = y - _center.y;
+
         return Math.atan2(calcX, -calcY);
     }
 
@@ -90,12 +89,6 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
         if (args.start !== undefined) {
             _val = args.start
         }
-        if (args.resizable !== undefined) {
-            _resizable = args.resizable;
-        }
-        if (_resizable) {
-            _centerRatio = {x: _center.x/_cursor.paper.width, y: _center.y/_cursor.paper.height};
-        }
         this.setValue(_val);
 
         var item = this;
@@ -104,14 +97,9 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
         _cursor.drag(
             // onmove
             function (dx, dy, x, y, event) {
-                var newAngle;
-                if (_resizable) {
-                    newAngle = computeAngle(startX + dx * _cursor.paper.w / _cursor.paper.width, startY + dy * _cursor.paper.h / _cursor.paper.height);
-                } else {
-                    newAngle = computeAngle(startX + dx, startY + dy);
-                }
+                var newAngle = computeAngle(startX + dx, startY + dy);
                 setCursorAngle(newAngle);
-                if (_moveCallback && typeof(_moveCallback) === 'function') {
+                if(_moveCallback && typeof(_moveCallback) === 'function') {
                     _moveCallback();
                 };
             },
@@ -130,11 +118,11 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
                 };
             }
         );
-        if (_resizable) {
-            $(window).resize(function() {
-                _cursor.paper.changeSize($(this).width() * _paperRatio.x, $(this).height() * _paperRatio.y);
-            });
-        }
+    }
+
+    this.setCenter = function(x, y) {
+        _center.x = x;
+        _center.y = y;
     }
 
     this.setValue = function(value) {
