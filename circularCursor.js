@@ -125,6 +125,10 @@ circularCursor = function (_cursor, _cursorRadius, _turnValue, _incrementValue) 
         _center.y = y;
     }
 
+    this.setRadius = function(radius) {
+        _cursorRadius = radius;
+    }
+
     this.setValue = function(value) {
         setValue(value);
     }
