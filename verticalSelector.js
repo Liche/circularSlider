@@ -37,10 +37,10 @@ verticalSelector = function(_elem, _config) {
     _elem.children('ul').children('li').bind('touchstart mousedown', function (e) {
         touchStart = true;
         movedCol = $(this).parent().attr('data-column');
-        startY = e.pageY;
+        startY = e.pageY || e.originalEvent.touches[0].pageY;
     });
     _elem.children('ul').children('li').bind('touchmove mousemove', function (e) {
-        currY = e.pageY;
+        currY = e.pageY || e.originalEvent.touches[0].pageY;
     });
     $(window).bind('touchend mouseup touchcancel', function (e) {
         if (touchStart && config.swipeTreshold < startY - currY) {
