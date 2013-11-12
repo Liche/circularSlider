@@ -7,6 +7,7 @@ verticalSelector = function(_elem, _config) {
     var columns = new Array();
     var value = new Array();
     var changeCallback;
+    var that = this;
     // ---
     // TOUCH CONFIG
     var touchStart = false;
@@ -44,19 +45,23 @@ verticalSelector = function(_elem, _config) {
     });
     $(window).bind('touchend mouseup touchcancel', function (e) {
         if (touchStart && config.swipeTreshold < startY - currY) {
-            // Swipe down -> +1
+            // Swipe up -> +1
             if (movedCol && value[movedCol] < 9) {
-                setColumnValue(movedCol, value[movedCol] + 1);
-                if(changeCallback && typeof(changeCallback) === 'function') {
-                    changeCallback();
+                if (!config.max || config.max >= that.getValue() + Math.pow(10, movedCol)) {
+                    setColumnValue(movedCol, value[movedCol] + 1);
+                    if(changeCallback && typeof(changeCallback) === 'function') {
+                        changeCallback();
+                    }
                 }
             }
         } else if (touchStart && config.swipeTreshold < currY - startY) {
-            // Swipe up -> -1
+            // Swipe down -> -1
             if (movedCol && value[movedCol] > 0) {
-                setColumnValue(movedCol, value[movedCol] - 1);
-                if(changeCallback && typeof(changeCallback) === 'function') {
-                    changeCallback();
+                if (!config.min || config.min <= that.getValue() - Math.pow(10, movedCol)) {
+                    setColumnValue(movedCol, value[movedCol] - 1);
+                    if(changeCallback && typeof(changeCallback) === 'function') {
+                        changeCallback();
+                    }
                 }
             }
         } else {
