@@ -16,7 +16,7 @@ horizontalSelector = function(_elem, _config) {
         startX = e.pageX || e.originalEvent.touches[0].pageX;
         if (config.disableScroll) e.preventDefault();
     });
-    _elem.bind('touchmove mousemove', function (e) {
+    $(window).bind('touchmove mousemove', function (e) {
         if (touchStart) {
             currX = e.pageX || e.originalEvent.touches[0].pageX;
             diffValue = (currX - startX) * config.divisionValue / canvasWidth;
