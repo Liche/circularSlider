@@ -10,6 +10,11 @@ horizontalSelector = function(_elem, _config) {
     var config = $.extend({}, baseConfig, _config);
 
     var canvasWidth = _elem.width();
+
+    var getValue = function () {
+        return parseInt(_elem.html());
+    }
+
     _elem.bind('touchstart mousedown', function (e) {
         touchStart = true;
         startX = e.pageX || e.originalEvent.touches[0].pageX;
@@ -22,15 +27,16 @@ horizontalSelector = function(_elem, _config) {
             diffValue = diffValue > 0 ? Math.floor(diffValue) : Math.ceil(diffValue);
             if (diffValue != 0) {
                 startX = currX;
+                newValue = getValue() + diffValue * config.incrementValue;
+                if (newValue < config.min) {
+                    newValue = config.min;
+                }
+                if (newValue > config.max) {
+                    newValue = config.max;
+                }
+                $(_elem).text(newValue);
+                $(_elem).trigger('change');
             }
-            newValue = that.getValue() + diffValue * config.incrementValue;
-            if (newValue < config.min) {
-                newValue = config.min;
-            }
-            if (newValue > config.max) {
-                newValue = config.max;
-            }
-            that.setValue(newValue);
             if (config.disableScroll) e.preventDefault();
         }
     });
@@ -38,14 +44,6 @@ horizontalSelector = function(_elem, _config) {
         touchStart = false;
     });
 
-    this.setValue = function (value) {
-        _elem.html(value);
-    }
-
-    this.getValue = function () {
-        return parseInt(_elem.html());
-    }
-
-    this.setValue(config.startValue);
+    _elem.text(config.startValue);
     return this;
 };

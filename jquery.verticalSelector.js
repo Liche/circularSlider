@@ -6,7 +6,6 @@
         var baseConfig = {cols: 1, startValue: 0, swipeTreshold: 5, disableScroll: true};
         var columns = new Array();
         var value = new Array();
-        var changeCallback;
         var that = this;
         // ---
         // TOUCH CONFIG
@@ -49,7 +48,7 @@
             if (touchStart && config.swipeTreshold < startY - currY) {
                 // Swipe up -> +1
                 if (movedCol && value[movedCol] < 9) {
-                    if (!config.max || config.max >= calculateValue() + Math.pow(10, movedCol)) {
+                    if (!config.max || config.max >= that.attr('data-value') + Math.pow(10, movedCol)) {
                         setColumnValue(movedCol, value[movedCol] + 1);
                     }
                 }
@@ -58,7 +57,7 @@
             } else if (touchStart && config.swipeTreshold < currY - startY) {
                 // Swipe down -> -1
                 if (movedCol && value[movedCol] > 0) {
-                    if (!config.min || config.min <= calculateValue() - Math.pow(10, movedCol)) {
+                    if (!config.min || config.min <= that.attr('data-value') - Math.pow(10, movedCol)) {
                         setColumnValue(movedCol, value[movedCol] - 1);
                     }
                 }

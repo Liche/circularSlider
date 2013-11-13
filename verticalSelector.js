@@ -6,7 +6,6 @@ verticalSelector = function(_elem, _config) {
     var baseConfig = {cols: 1, startValue: 0, swipeTreshold: 5, disableScroll: true};
     var columns = new Array();
     var value = new Array();
-    var changeCallback;
     var that = this;
     // ---
     // TOUCH CONFIG
@@ -34,6 +33,27 @@ verticalSelector = function(_elem, _config) {
             'margin-top': - val * columnHeight
         });
     }
+
+    var calculateValue = function () {
+        var sum = 0;
+        for(var i in value) {
+            sum += Math.pow(10, i) * value[i];
+        }
+
+        $(_elem).attr('data-value', sum);
+        return sum;
+    }
+
+    var setValue = function (val) {
+        var extract;
+        var iVal = val;
+        for(var i in columns) {
+            extract = iVal % 10;
+            iVal = (iVal - extract) / 10;
+            setColumnValue(i, extract);
+        }
+        $(_elem).attr('data-value', val);
+    }
     // Listeners
     _elem.children('ul').children('li').bind('touchstart mousedown', function (e) {
         touchStart = true;
@@ -49,21 +69,19 @@ verticalSelector = function(_elem, _config) {
         if (touchStart && config.swipeTreshold < startY - currY) {
             // Swipe up -> +1
             if (movedCol && value[movedCol] < 9) {
-                if (!config.max || config.max >= that.getValue() + Math.pow(10, movedCol)) {
+                if (!config.max || config.max >= $(_elem).attr('data-value') + Math.pow(10, movedCol)) {
                     setColumnValue(movedCol, value[movedCol] + 1);
-                    if(changeCallback && typeof(changeCallback) === 'function') {
-                        changeCallback();
-                    }
+                    $(_elem).trigger('change');
+                    calculateValue();
                 }
             }
         } else if (touchStart && config.swipeTreshold < currY - startY) {
             // Swipe down -> -1
             if (movedCol && value[movedCol] > 0) {
-                if (!config.min || config.min <= that.getValue() - Math.pow(10, movedCol)) {
+                if (!config.min || config.min <= $(_elem).attr('data-value') - Math.pow(10, movedCol)) {
                     setColumnValue(movedCol, value[movedCol] - 1);
-                    if(changeCallback && typeof(changeCallback) === 'function') {
-                        changeCallback();
-                    }
+                    $(_elem).trigger('change');
+                    calculateValue();
                 }
             }
         } else {
@@ -72,30 +90,9 @@ verticalSelector = function(_elem, _config) {
         touchStart = false;
     });
 
-    this.getValue = function () {
-        var sum = 0;
-        for(var i in value) {
-            sum += Math.pow(10, i) * value[i];
-        }
-
-        return sum;
-
-    }
-
-    this.setValue = function (val) {
-        var extract;
-        var iVal = val;
-        for(var i in columns) {
-            extract = iVal % 10;
-            iVal = (iVal - extract) / 10;
-            setColumnValue(i, extract);
-        }
-    }
-
-    this.setChangeCallback = function (callback) {
-        changeCallback = callback;
-    }
-    this.setValue(config.startValue);
-
+    setValue(config.startValue);
+    $(_elem).bind('data-change', function () {
+        setValue($(_elem).attr('data-value'));
+    });
     return this;
 };
