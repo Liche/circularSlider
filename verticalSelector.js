@@ -90,9 +90,6 @@ verticalSelector = function(_elem, _config) {
             iVal = (iVal - extract) / 10;
             setColumnValue(i, extract);
         }
-        if(changeCallback && typeof(changeCallback) === 'function') {
-            changeCallback();
-        }
     }
 
     this.setChangeCallback = function (callback) {

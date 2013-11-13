@@ -12,7 +12,6 @@ horizontalSelector = function(_elem, _config) {
     var canvasWidth = _elem.width();
     _elem.bind('touchstart mousedown', function (e) {
         touchStart = true;
-        movedCol = $(this).parent().attr('data-column');
         startX = e.pageX || e.originalEvent.touches[0].pageX;
         if (config.disableScroll) e.preventDefault();
     });
@@ -36,7 +35,6 @@ horizontalSelector = function(_elem, _config) {
         }
     });
     $(window).bind('touchend mouseup touchcancel', function (e) {
-        console.log('haha');
         touchStart = false;
     });
 
