@@ -3,7 +3,7 @@ verticalSelector = {};
 verticalSelector = function(_elem, _config) {
     _elem.addClass("lch-vs");
     // Base config
-    var baseConfig = {cols: 1, startValue: 0, swipeTreshold: 5};
+    var baseConfig = {cols: 1, startValue: 0, swipeTreshold: 5, disableScroll: true};
     var columns = new Array();
     var value = new Array();
     var changeCallback;
@@ -39,9 +39,11 @@ verticalSelector = function(_elem, _config) {
         touchStart = true;
         movedCol = $(this).parent().attr('data-column');
         startY = e.pageY || e.originalEvent.touches[0].pageY;
+        if (config.disableScroll) e.preventDefault();
     });
     _elem.children('ul').children('li').bind('touchmove mousemove', function (e) {
         currY = e.pageY || e.originalEvent.touches[0].pageY;
+        if (config.disableScroll) e.preventDefault();
     });
     $(window).bind('touchend mouseup touchcancel', function (e) {
         if (touchStart && config.swipeTreshold < startY - currY) {
