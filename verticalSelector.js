@@ -17,7 +17,7 @@ verticalSelector = function(_elem, _config) {
     // Selector height
     var columnHeight;
     // ---
-    config = $.extend({}, baseConfig, _config);
+    var config = $.extend({}, baseConfig, _config);
     for (var i = config.cols -1; i >= 0; i--) {
         columns[i] = $('<ul/>');
         columns[i].html('<li>0</li><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li>');
